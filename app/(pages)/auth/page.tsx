@@ -1,5 +1,7 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
+import { SignInForm } from "@/app/components/SignInForm";
+import { SignUpForm } from "@/app/components/SignUpForm";
 import { OAuth } from "@/app/components/OAuth";
 
 export default function Auth() {
@@ -11,8 +13,12 @@ export default function Auth() {
             <TabsTrigger value="signin">Sign In</TabsTrigger>
             <TabsTrigger value="signup">Sign Up</TabsTrigger>
           </TabsList>
-          <TabsContent value="signin">Sign In form goes here.</TabsContent>
-          <TabsContent value="signup">Sign Up form goes here.</TabsContent>
+          <TabsContent value="signin">
+            <SignInForm />
+          </TabsContent>
+          <TabsContent value="signup">
+            <SignUpForm />
+          </TabsContent>
         </Tabs>
         <div className="w-full grid grid-cols-3 items-center gap-2">
           <span></span>

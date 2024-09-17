@@ -7,7 +7,9 @@ export const userTable = pgTable("user", {
   hashedPassword: text("hashed_password"),
   email: text("email").unique(),
   isEmailVerified: boolean("is_email_verified").notNull().default(false),
-  profilePictureUrl: text("profile_picture_url"),
+  profilePictureUrl: text("profile_picture_url").default(
+    "https://utfs.io/f/f8359bdb-d065-4ce7-b0b1-886cce4992c7-gvfw81.jpg"
+  ),
   username: text("username").notNull(),
   role: roleEnums("role").notNull().default("user"),
 });

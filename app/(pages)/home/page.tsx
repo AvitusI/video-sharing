@@ -15,7 +15,7 @@ export default async function Page() {
     <div className="h-screen flex items-center justify-center">
       <div className="w-[400px] flex flex-col items-center">
         <Image
-          src={user.profile_picture_url}
+          src={user?.profile_picture_url}
           width={200}
           height={200}
           className="rounded-full"
