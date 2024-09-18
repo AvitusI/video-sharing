@@ -49,7 +49,7 @@ export const SignInForm = () => {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-2">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <FormField
           control={form.control}
           name="email"
@@ -76,7 +76,10 @@ export const SignInForm = () => {
             </FormItem>
           )}
         />
-        <Button type="submit" className="w-full">
+        <Button
+          type="submit"
+          className="w-full bg-green-500 hover:bg-green-300"
+        >
           Submit
         </Button>
       </form>
