@@ -1,4 +1,11 @@
-import { boolean, pgEnum, pgTable, text, timestamp } from "drizzle-orm/pg-core";
+import {
+  boolean,
+  pgEnum,
+  pgTable,
+  serial,
+  text,
+  timestamp,
+} from "drizzle-orm/pg-core";
 
 export const roleEnums = pgEnum("role", ["admin", "user"]);
 
@@ -10,8 +17,16 @@ export const userTable = pgTable("user", {
   profilePictureUrl: text("profile_picture_url").default(
     "https://utfs.io/f/f8359bdb-d065-4ce7-b0b1-886cce4992c7-gvfw81.jpg"
   ),
-  username: text("username").notNull(),
+  username: text("username").notNull().default("Guest"),
   role: roleEnums("role").notNull().default("user"),
+});
+
+export const magicLinkTable = pgTable("magic_link", {
+  id: serial("id").primaryKey(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => userTable.id),
+  token: text("token").notNull(),
 });
 
 export const oauthAccountTable = pgTable("oauth_account", {

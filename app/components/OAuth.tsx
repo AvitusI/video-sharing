@@ -1,15 +1,19 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+import Image from "next/image";
+
+import { Button } from "@/components/ui/button";
+import { toast } from "@/hooks/use-toast";
+
 import {
   createGoogleAuthorizationURL,
   createGithubAuthorizationURL,
 } from "../actions/auth.actions";
 
-import { Button } from "@/components/ui/button";
-import { toast } from "@/hooks/use-toast";
-import Image from "next/image";
-
 export const OAuth = () => {
+  const router = useRouter();
+
   const onGoogleSignInClicked = async () => {
     const res = await createGoogleAuthorizationURL();
 
@@ -75,7 +79,12 @@ export const OAuth = () => {
       </div>
 
       <div className="w-full">
-        <Button variant="outline" size="custom" className="w-full">
+        <Button
+          variant="outline"
+          size="custom"
+          className="w-full"
+          onClick={() => router.push("/auth/magic-link")}
+        >
           <Image
             src="/images/key.svg"
             alt="Key Icon"
