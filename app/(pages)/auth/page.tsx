@@ -14,7 +14,7 @@ export default function Auth() {
         </div>
 
         <div className="flex flex-col gap-4">
-          <Tabs defaultValue="signin">
+          <Tabs defaultValue="signup">
             <TabsList>
               <TabsTrigger value="signin">Sign In</TabsTrigger>
               <TabsTrigger value="signup">Sign Up</TabsTrigger>

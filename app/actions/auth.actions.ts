@@ -16,11 +16,18 @@ import { emailVerificationTable, userTable } from "../lib/db/schema";
 import { sendEmail } from "@/lib/mail";
 
 export const signUp = async (values: z.infer<typeof SignUpSchema>) => {
-  console.log(values);
   const hashedPassword = await new Argon2id().hash(values.password);
   const userId = generateId(15);
 
   try {
+    const existingUser = await db.query.userTable.findFirst({
+      where: (table) => eq(table.email, values.email),
+    });
+
+    if (existingUser) {
+      return { error: "User already exists!" };
+    }
+
     await db.insert(userTable).values({
       id: userId,
       username: values.username,
@@ -106,6 +113,73 @@ export const signIn = async (values: z.infer<typeof SignInSchema>) => {
     );
 
     return { success: "Logged in successfully" };
+  } catch (e: any) {
+    return { error: e?.message };
+  }
+};
+
+export const resendVerificationEmail = async (email: string) => {
+  try {
+    const existingUser = await db.query.userTable.findFirst({
+      where: (table) => eq(table.email, email),
+    });
+
+    if (!existingUser) {
+      return { error: "User not found!" };
+    }
+
+    if (existingUser.isEmailVerified === true) {
+      return { error: "Email already verified!" };
+    }
+
+    const existingCode = await db.query.emailVerificationTable.findFirst({
+      where: eq(emailVerificationTable.userId, existingUser.id),
+    });
+
+    if (!existingCode) {
+      return { error: "Code not found!" };
+    }
+
+    const sentAt = new Date(existingCode.sentAt);
+    const isOneMinuteHasPassed =
+      new Date().getTime() - sentAt.getTime() > 60000;
+
+    if (!isOneMinuteHasPassed) {
+      return {
+        error:
+          "Email already sent next email in " +
+          (60 - Math.floor((new Date().getTime() - sentAt.getTime()) / 1000)) +
+          " seconds",
+      };
+    }
+
+    const code = Math.random().toString(36).substring(2, 8);
+
+    await db
+      .update(emailVerificationTable)
+      .set({
+        code,
+        sentAt: new Date(),
+      })
+      .where(eq(emailVerificationTable.userId, existingUser.id));
+
+    const token = jwt.sign(
+      { email, userId: existingUser.id, code },
+      process.env.JWT_SECRET!,
+      {
+        expiresIn: "5m",
+      }
+    );
+
+    const url = `${process.env.NEXT_PUBLIC_BASE_URL}/api/verify-email?token=${token}`;
+
+    sendEmail({
+      html: `<a href="${url}">Verify your email</a>.`,
+      subject: "Verify your email",
+      to: email,
+    });
+
+    return { success: "Email sent successfully" };
   } catch (e: any) {
     return { error: e?.message };
   }
