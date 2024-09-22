@@ -4,6 +4,8 @@ import { signOut } from "@/app/actions/auth.actions";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 
+import { CustomButton } from "@/app/components/CustomButton";
+
 export default async function Page() {
   const { user } = await validateRequest();
 
@@ -28,6 +30,10 @@ export default async function Page() {
           <p className="text-center text-gray-700">
             You have the role: {user.role}
           </p>
+        </div>
+        <div className="w-full p-2 flex justify-between">
+          <CustomButton type="photo" />
+          <CustomButton type="video" />
         </div>
         <div className="mt-4">
           <form action={signOut}>
