@@ -8,7 +8,7 @@ import { eq } from "drizzle-orm";
 import { MagicLinkSchema } from "../types";
 import db from "../lib/db";
 import { magicLinkTable, userTable } from "../lib/db/schema";
-import { sendEmail } from "@/lib/mail";
+import { sendEmail } from "@/lib/resend.mail";
 
 const generateMagicLink = async (email: string, userId: string) => {
   const token = jwt.sign({ email, userId }, process.env.JWT_SECRET!, {

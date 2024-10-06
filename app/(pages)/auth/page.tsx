@@ -6,6 +6,7 @@ import { SignUpForm } from "@/app/components/SignUpForm";
 import { OAuth } from "@/app/components/OAuth";
 
 export default function Auth() {
+
   return (
     <div className="min-h-screen flex justify-center p-2">
       <div className="w-[360px]">

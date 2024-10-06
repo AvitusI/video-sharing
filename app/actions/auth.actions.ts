@@ -13,7 +13,7 @@ import { lucia, validateRequest } from "@/lib/auth";
 import { SignUpSchema, SignInSchema } from "../types";
 import db from "../lib/db";
 import { emailVerificationTable, userTable } from "../lib/db/schema";
-import { sendEmail } from "@/lib/mail";
+import { sendEmail } from "@/lib/resend.mail";
 
 export const signUp = async (values: z.infer<typeof SignUpSchema>) => {
   const hashedPassword = await new Argon2id().hash(values.password);

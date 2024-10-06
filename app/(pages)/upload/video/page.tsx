@@ -1,13 +1,13 @@
 //import NextVideo from "next-video";
 //import sample from "@/videos/new-year.mp4";
 
-import { S3UploadForm } from "@/app/components/S3UploadForm";
+import { VideoForm } from "@/app/components/VideoForm";
 
 export default function VideoUpload() {
   return (
     <div className="h-screen flex items-center justify-center gap-4">
       <h1>Upload your content</h1>
-      <S3UploadForm />
+      <VideoForm />
     </div>
   );
 }

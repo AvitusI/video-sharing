@@ -58,6 +58,8 @@ const config: Config = {
       },
       gridTemplateColumns: {
         custom: "1fr 2fr",
+        customized: "400px 1fr",
+        customization: "1fr 100px"
       },
     },
   },

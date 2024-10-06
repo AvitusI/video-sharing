@@ -1,23 +1,20 @@
 "use client";
 
 import { useCallback } from "react";
-import { useDropzone } from "@uploadthing/react";
-import { generateClientDropzoneAccept } from "uploadthing/client";
-import { FaUpload } from "react-icons/fa";
-import Image from "next/image";
-import { Button } from "@/components/ui/button";
+import { useDropzone } from "react-dropzone";
+import { ImagePlus } from "lucide-react";
 
-type VideoUploaderProps = {
+type ImageUploaderProps = {
   imageUrl: string;
   onFieldChange: any;
   setFiles: any;
 };
 
-export function VideoUploader({
+export function ImageUploader({
   imageUrl,
   onFieldChange,
   setFiles,
-}: VideoUploaderProps) {
+}: ImageUploaderProps) {
   const convertFileToUrl = (file: any) => URL.createObjectURL(file);
 
   const onDrop = useCallback((acceptedFiles: any) => {
@@ -27,33 +24,29 @@ export function VideoUploader({
 
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
-    accept: generateClientDropzoneAccept(["image/jpeg", "image/png"]),
+    accept: {
+      "video/mp4": [],
+    },
+    maxSize: 24 * 1024 * 1024,
   });
 
   return (
     <div
+      className="flex justify-center items-center border border-green-500 border-dashed rounded-md focus:outline-none size-40"
       {...getRootProps()}
-      className="flex h-72 cursor-pointer flex-col overflow-hidden rounded-md bg-grey-50"
     >
-      <input {...getInputProps()} id="imageUrl" className="cursor-pointer" />
+      <input {...getInputProps} id="image" className="cursor-pointer hidden" />
       {imageUrl ? (
-        <div className="flex">
-          <Image
-            src={imageUrl}
-            alt="image"
-            width={400}
-            height={300}
-            className="object-cover object-center"
-          />
-        </div>
+        <video src={imageUrl} autoPlay className="w-[360px] h-[360px]" />
       ) : (
-        <div className="flex flex-col text-center pt-12 border-dashed border-2 border-gray-300 rounded-md h-full">
-          <FaUpload size={32} className="inline" />
-          <h3 className="mb-2 mt-2">Drag photo here</h3>
-          <p className="p-12 mb-4">.png or .jpg extensions</p>
-          <Button className="rounded-md" size="sm">
-            Select From Computer
-          </Button>
+        <div className="flex flex-col items-center pt-2 p-4 gap-3">
+          <p className="text-sm text-center">
+            Drag &apos;n&apos; drop, or click to select image files
+          </p>
+          <span className="text-xs text-center text-gray-400">
+            (max size - 24 Mb)
+          </span>
+          <ImagePlus size={36} />
         </div>
       )}
     </div>
