@@ -1,46 +1,43 @@
 "use client"
 
-import { startChat } from "@/app/actions/chat.actions";
-import { Button } from "@/components/ui/button";
-import { toast } from "@/hooks/use-toast";
-import { useChatStore } from "@/store/chatStore";
+import { searchUser } from "@/app/actions/user.actions"
+import { toast } from "@/hooks/use-toast"
+import { Button } from "@/components/ui/button"
+import { SearchCommand } from "@/app/components/search/SearchCommand"
 
 export default function Profile() {
 
-  const toggleIsSelectedChat = useChatStore((state) => state.toggleIsSelectedChat)
-  const setSelectedChat = useChatStore((state) => state.setSelectedChat)
-  const selectedChat = useChatStore((state) => state.selectedChat)
+  const name = "Avy"
 
-
-  async function chat() {
-    const res = await startChat("rgcpy9eq7g4170s")
-    if (!res?.success) {
-      toast({
-        variant: "destructive",
-        description: res?.chat ? res?.chat : res?.error
-      });
-    } else if (res?.success) {
+  const search = async () => {
+    const res = await searchUser(name)
+    if (res.result) {
       toast({
         variant: "default",
-        description: "Chat retrieved successfully"
+        description: "Success!"
       })
-      setSelectedChat(res.chat)
-      toggleIsSelectedChat(true)
+      console.log(res.result)
+    }
+    else if (res.error) {
+      toast({
+        variant: "destructive",
+        description: "Not successful!"
+      })
+      console.error(res.error)
     }
   }
 
   return (
-    <div>
-      <Button onClick={chat}>
-        Start chat
+    <div className="flex flex-col gap-4">
+      <Button onClick={search}>
+        Search
       </Button>
-      {selectedChat && (
-        <div>
-          {selectedChat.users.map((user) => (
-            JSON.stringify(user, null, " ")
-          ))}
-        </div>
-      )}
+      <div className="p-2">
+        <SearchCommand />
+        <Button>
+          Click
+        </Button>
+      </div>
     </div>
   )
 }

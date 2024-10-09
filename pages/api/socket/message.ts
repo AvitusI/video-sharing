@@ -1,7 +1,6 @@
 import { NextApiRequest } from "next";
 import db from "@/app/lib/db";
 import { NextApiResponseServerIo } from "@/types";
-import { currentUser } from "@/lib/currentUser";
 import { eq } from "drizzle-orm";
 import { messageTable } from "@/app/lib/db/schema";
 import { generateId } from "lucia";
@@ -15,18 +14,24 @@ export default async function handler(
   }
 
   try {
-    const user = await currentUser();
+    /*
+    const { user}  = await validateRequest()
+    The above won't work. Seems like there is a different wat to implement
+    lucia in Pages API. Try to get the user state from Zustand store.
+    Or can we access the session object in cookies ?
+    */
     const { content } = req.body;
     const { chatId } = req.query;
+    const { userId } = req.query
 
-    if (!user) {
-      return res.status(401).json({ error: "Unauthorized" });
-    }
     if (!chatId) {
       return res.status(400).json({ error: "Chat ID is missing" });
     }
     if (!content) {
       return res.status(400).json({ error: "Content is missing" });
+    }
+    if(!userId) {
+      return res.status(400).json({ error: "Unauthorized" });
     }
 
     const messageId = generateId(15);
@@ -44,7 +49,7 @@ export default async function handler(
     }
 
     const userFounded = chat?.users.some(
-      (chatUser) => chatUser.userId === user.id
+      (chatUser) => chatUser.userId === userId
     );
 
     if (!userFounded) {
@@ -53,25 +58,55 @@ export default async function handler(
         .json({ error: "You are not a member to this chat" });
     }
 
-    const message = await db
-      .insert(messageTable)
-      .values({
-        id: messageId,
-        sender: user.id,
-        content,
-        chat: chat.id,
+    let createdMessage = null;
+
+    await db.transaction(async (trx) => {
+      const message = await trx
+        .insert(messageTable)
+        .values({
+          id: messageId,
+          sender: userId as string,
+          content,
+          chat: chat.id,
+        })
+      
+      if (message.rowCount === 0) {
+        trx.rollback();
+        return res.status(500).json({ message: "Internal Error Occured" });
+      }
+
+      const messageWithChat = await trx.query.messageTable.findFirst({
+        where: (table) => eq(table.id, messageId),
+        with: {
+          chat: {
+            with: {
+              users: {
+                columns: {
+                  userId: false,
+                  chatId: false,
+                },
+                with: {
+                  user: {
+                    columns: {
+                      hashedPassword: false,
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
       })
-      .returning({
-        id: messageTable.id,
-        content: messageTable.content,
-        createdAt: messageTable.createdAt,
-      });
+
+      createdMessage = messageWithChat;
+
+    })
 
     const chatKey = `chat:${chatId}:messages`;
 
-    res?.socket?.server?.io?.emit(chatKey, message);
+    res?.socket?.server?.io?.emit(chatKey, createdMessage);
 
-    return res.status(200).json(message);
+    return res.status(200).json(createdMessage);
   } catch (error) {
     console.log("[MESSAGES_POST]", error);
     return res.status(500).json({ message: "Internal Error" });

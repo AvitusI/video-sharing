@@ -1,62 +1,39 @@
+"use client"
+
+import { useRouter } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
+import { format } from "date-fns";
 import Image from "next/image";
-import { CircleArrowLeft, SearchIcon } from "lucide-react"
+import { CircleArrowLeft } from "lucide-react"
 import { Button } from "@/components/ui/button";
 
 import { Chat } from "@/app/components/chat/Chat";
+import { ChatType, useChatStore } from "@/store/chatStore";
+import { retrieveChats } from "@/app/actions/chat.actions";
+import { SearchDialog } from "@/app/components/modals/SearchUser";
 
-const chats = [
-  {
-    id: 1,
-    user: "Kelvin",
-    avatar: "/images/img3.jpg",
-    latestmessage: "Hello there",
-    time: "17:25 PM"
-  },
-  {
-    id: 2,
-    user: "Gee",
-    avatar: "/images/img4.jpg",
-    latestmessage: "Vp G unaendeleaje",
-    time: "17:25 PM"
-  },
-  {
-    id: 3,
-    user: "Justine",
-    avatar: "/images/img5.jpg",
-    latestmessage: "Nshakuwa billionaire wa Pie",
-    time: "17:25 PM"
-  },
-  {
-    id: 4,
-    user: "Hamisi",
-    avatar: "/images/img6.jpg",
-    latestmessage: "Avi vipi, ufunguo uliacha wapi?",
-    time: "17:25 PM"
-  },
-  {
-    id: 5,
-    user: "Isaya",
-    avatar: "/images/img7.jpg",
-    latestmessage: "Nimetumia Next.js. Programming language ni JavaScript.",
-    time: "17:25 PM"
-  },
-  {
-    id: 6,
-    user: "Isaya",
-    avatar: "/images/img7.jpg",
-    latestmessage: "Nimetumia Next.js. Programming language ni JavaScript.",
-    time: "17:25 PM"
-  },
-  {
-    id: 7,
-    user: "Isaya",
-    avatar: "/images/img7.jpg",
-    latestmessage: "Nimetumia Next.js. Programming language ni JavaScript.",
-    time: "17:25 PM"
-  }
-]
+const retrieve = async () => {
+  const userwithChats = await retrieveChats();
+  return userwithChats;
+}
 
 export default function Messages() {
+
+  const toggleIsSelectedChat = useChatStore((store) => store.toggleIsSelectedChat)
+  const setSelectedChat = useChatStore((store) => store.setSelectedChat)
+  const router = useRouter()
+
+  const { data, status, error } = useQuery({
+    queryKey: ["chats"],
+    queryFn: retrieve
+  })
+
+  const onChatSelected = (chat: ChatType) => {
+    toggleIsSelectedChat(true)
+    setSelectedChat(chat)
+    router.push(`/messages/${chat?.chat.id}`)
+  }
+
   return (
     <div className="flex flex-col p-4 gap-2 items-center w-full h-screen">
       <div className="flex justify-end w-full">
@@ -79,26 +56,37 @@ export default function Messages() {
         </div>
       </div>
       <div id="search" className="mb-6 w-full mt-4">
-        <div className="relative">
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <SearchIcon className="text-gray-500"/>
-          </div>
-          <input
-            placeholder="Search user to message"
-            className="focus:ring-green-500 focus:border-green-500 focus:outline-none block w-full pl-10 sm:text-sm border-gray-500 rounded-full p-2 border placeholder:text-xsgray-500"
-          />
-        </div>
+        <SearchDialog />
       </div>
       <div className="flex flex-1 flex-col overflow-y-auto gap-2 w-full no-scrollbar">
-        {chats.map((chat) => (
-          <Chat
-            key={chat.id}
-            user={chat.user}
-            avatar={chat.avatar}
-            latestmessage={chat.latestmessage}
-            time={chat.time}
-          />
-        ))}
+        {status === "pending" ? (
+          <div>
+            Loading your chats...
+          </div>
+        ) : status === "error" ? (
+          <div>
+            {error.message}
+          </div>
+        ) : (
+          <div>
+            {data.result?.chats.map((chat) => {
+              const otherUser = chat.chat.users.find((user) => user.user.id !== data.result.id)
+              const latestmessage = chat.chat.latestMessage ? chat.chat.latestMessage : "No message yet"
+              const DATE_FORMAT = "HH:mm a"
+
+              return (
+                <div key={chat.chat.id} onClick={() => onChatSelected(chat)} className="hover:bg-slate-200 rounded-md">
+                  <Chat
+                    user={otherUser?.user.username as string}
+                    avatar={otherUser?.user.profilePictureUrl as string}
+                    latestmessage={latestmessage}
+                    time={format(new Date(chat.chat.createdAt), DATE_FORMAT)}
+                  />
+                </div>
+              )
+              })}
+          </div>
+        )}
       </div>
     </div>
   );

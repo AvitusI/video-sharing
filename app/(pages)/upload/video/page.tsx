@@ -5,8 +5,7 @@ import { VideoForm } from "@/app/components/VideoForm";
 
 export default function VideoUpload() {
   return (
-    <div className="h-screen flex items-center justify-center gap-4">
-      <h1>Upload your content</h1>
+    <div className="h-screen flex flex-col items-center justify-center gap-4">
       <VideoForm />
     </div>
   );

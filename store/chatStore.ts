@@ -1,34 +1,37 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware"
-//import { cookies } from "next/headers";
 
-import { SelectChat, SelectUser } from "@/app/lib/db/schema";
+import { SelectChat, InsertUser, InsertMessage, InsertChat } from "@/app/lib/db/schema";
 
-interface Message {
-  id: string
-  content: string
-  createdAt: Date
+export type Message = InsertMessage & {
+  chat: InsertChat & {
+    users: {
+      user: InsertUser
+    }[]
+  }
 }
 
-interface User {
-  user: SelectUser
-}
 
-type Chat = SelectChat & {
-    users: User[]
+export type ChatType = {
+  chat: SelectChat & {
+    users: {
+      user: InsertUser
+    }[]
+  } 
 } | null
 
 
 type ChatStrore = {
   isSelectedChat: boolean;
   toggleIsSelectedChat: (value: boolean) => void;
-  selectedChat: Chat;
-  setSelectedChat: (chat: Chat) => void;
+  selectedChat: ChatType;
+  setSelectedChat: (chat: ChatType) => void;
   chatMessages: Message[];
   addChatMessage: (
-    id: string,
-    content: string,
-    createdAt: Date
+    message: Message
+  ) => void;
+  addChatMessages: (
+    messages: Message[]
   ) => void;
 };
 
@@ -41,33 +44,43 @@ export const useChatStore = create(
     },
     chatMessages: [],
     addChatMessage: (
-      id: string,
-      content: string,
-      createdAt: Date
+      message: Message
     ) => {
       return set((state) => {
         return {
           ...state,
           chatMessages: [
             ...state.chatMessages,
-            {
-              id,
-              content,
-              createdAt
-            },
+            message
           ],
         }
       })
     },
     selectedChat: null,
     setSelectedChat: (
-      chat: Chat
+      chat: ChatType
     ) => {
       return set((state) => {
         return {
           ...state,
           selectedChat: chat
         }
+      })
+    },
+    addChatMessages: (
+      messages: Message[]
+    ) => {
+      return set((state) => {
+        if (messages.length === 0) {
+          return state
+        }
+        return {
+          ...state,
+          chatMessages: [
+            //...state.chatMessages, // This is because we won't need previous chat messages
+            ...messages
+          ]
+        }        
       })
     }
   }),

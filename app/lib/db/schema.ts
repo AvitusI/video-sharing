@@ -1,4 +1,4 @@
-import { relations } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 import {
   boolean,
   pgEnum,
@@ -7,6 +7,7 @@ import {
   text,
   timestamp,
   primaryKey,
+  index
 } from "drizzle-orm/pg-core";
 
 export const roleEnums = pgEnum("role", ["admin", "user"]);
@@ -21,7 +22,11 @@ export const userTable = pgTable("user", {
   ),
   username: text("username").notNull().default("Guest"),
   role: roleEnums("role").notNull().default("user"),
-});
+},
+  (table) => ({
+    userSearchIndex: index('user_search_index').using('gin', sql`to_tsvector('simple', ${table.username})`),
+  })
+);
 
 export const magicLinkTable = pgTable("magic_link", {
   id: serial("id").primaryKey(),
@@ -415,3 +420,6 @@ export type SelectUser = typeof userTable.$inferSelect
 
 export type InsertChat = typeof chatTable.$inferInsert
 export type SelectChat = typeof chatTable.$inferSelect
+
+export type InsertMessage = typeof messageTable.$inferInsert
+export type SelectMessage = typeof messageTable.$inferSelect

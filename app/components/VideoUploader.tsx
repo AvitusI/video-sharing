@@ -2,7 +2,7 @@
 
 import { useCallback } from "react";
 import { useDropzone } from "react-dropzone";
-import { ImagePlus } from "lucide-react";
+import { VideoIcon } from "lucide-react";
 
 type ImageUploaderProps = {
   imageUrl: string;
@@ -27,26 +27,26 @@ export function ImageUploader({
     accept: {
       "video/mp4": [],
     },
-    maxSize: 24 * 1024 * 1024,
+    maxSize: 50 * 1024 * 1024,
   });
 
   return (
     <div
-      className="flex justify-center items-center border border-green-500 border-dashed rounded-md focus:outline-none size-40"
+      className="flex justify-center items-center border border-green-500 border-dashed rounded-md focus:outline-none size-96"
       {...getRootProps()}
     >
       <input {...getInputProps} id="image" className="cursor-pointer hidden" />
       {imageUrl ? (
-        <video src={imageUrl} autoPlay className="w-[360px] h-[360px]" />
+        <video src={imageUrl} autoPlay className="w-[384px] h-[384px]" />
       ) : (
         <div className="flex flex-col items-center pt-2 p-4 gap-3">
-          <p className="text-sm text-center">
-            Drag &apos;n&apos; drop, or click to select image files
+          <p className="text-sm text-center text-gray-500">
+            Drag &apos;n&apos; drop, or click to select video files
           </p>
-          <span className="text-xs text-center text-gray-400">
-            (max size - 24 Mb)
+          <span className="text-xs text-center">
+            (max size - 50 Mb)
           </span>
-          <ImagePlus size={36} />
+          <VideoIcon size={48} />
         </div>
       )}
     </div>

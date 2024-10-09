@@ -116,11 +116,33 @@ export const retrieveChats = async () => {
     try {
         const userWithChats = await db.query.userTable.findFirst({
             where: (table) => eq(table.id, user.id),
+            columns: {
+                hashedPassword: false
+            },
             with: {
                 chats: {
                     columns: {
                         userId: false,
                         chatId: false
+                    },
+                    with: {
+                        chat: {
+                            with: {
+                                users: {
+                                    columns: {
+                                        userId: false,
+                                        chatId: false
+                                    },
+                                    with: {
+                                        user: {
+                                            columns: {
+                                                hashedPassword: false
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }

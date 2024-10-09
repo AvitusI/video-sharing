@@ -58,7 +58,7 @@ export const VideoForm = () => {
         <div className="hidden sm:w-1/3 sm:flex"></div>
         <div className="w-full sm:w-1/3">
           <div className="flex flex-col gap-2 p-2 sm:p-4">
-            <h1 className="text-center text-2xl mb-4">Share your photo</h1>
+            <h1 className="text-center text-2xl mb-4">Upload Video</h1>
             <form onSubmit={handleSubmit(doSubmit)}>
               <div className="flex flex-col p-2 gap-4">
                 <div className="flex justify-center items-center">
@@ -77,7 +77,7 @@ export const VideoForm = () => {
                 </div>
                 <div className="flex justify-end mt-3">
                   <Button
-                    className="bg-orange-500"
+                    className="bg-green-500 hover:bg-green-400 w-full transition ease-in-out duration-300"
                     type="submit"
                     disabled={isSubmitting || uploading}
                   >

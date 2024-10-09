@@ -4,6 +4,7 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 
 import { SocketProvider } from "@/app/components/providers/socket-provider";
+import { QueryProvider } from "@/app/components/providers/query-provider";
 
 // NODE_TLS_REJECT_UNAUTHORIZED='0'
 
@@ -33,7 +34,11 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <SocketProvider>{children}</SocketProvider>
+        <SocketProvider>
+          <QueryProvider>
+            {children}
+          </QueryProvider>
+        </SocketProvider>
         <Toaster />
       </body>
     </html>
