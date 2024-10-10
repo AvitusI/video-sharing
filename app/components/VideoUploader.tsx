@@ -4,23 +4,23 @@ import { useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import { VideoIcon } from "lucide-react";
 
-type ImageUploaderProps = {
+type VideoUploaderProps = {
   imageUrl: string;
   onFieldChange: any;
   setFiles: any;
 };
 
-export function ImageUploader({
+export function VideoUploader({
   imageUrl,
   onFieldChange,
   setFiles,
-}: ImageUploaderProps) {
+}: VideoUploaderProps) {
   const convertFileToUrl = (file: any) => URL.createObjectURL(file);
 
   const onDrop = useCallback((acceptedFiles: any) => {
     setFiles(acceptedFiles);
     onFieldChange(convertFileToUrl(acceptedFiles[0]));
-  }, []);
+  }, [onFieldChange, setFiles]);
 
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
@@ -32,12 +32,12 @@ export function ImageUploader({
 
   return (
     <div
-      className="flex justify-center items-center border border-green-500 border-dashed rounded-md focus:outline-none size-96"
+      className={`flex justify-center items-center border border-green-500 border-dashed rounded-md focus:outline-none w-[384px] ${imageUrl ? "h-auto border-none" : "h-[400px]"}`}
       {...getRootProps()}
     >
       <input {...getInputProps} id="image" className="cursor-pointer hidden" />
       {imageUrl ? (
-        <video src={imageUrl} autoPlay className="w-[384px] h-[384px]" />
+        <video src={imageUrl} autoPlay loop className="w-[384px] h-auto max-h-[500px]" />
       ) : (
         <div className="flex flex-col items-center pt-2 p-4 gap-3">
           <p className="text-sm text-center text-gray-500">

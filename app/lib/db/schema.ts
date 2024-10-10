@@ -12,6 +12,21 @@ import {
 
 export const roleEnums = pgEnum("role", ["admin", "user"]);
 
+export const categoryEnums = pgEnum("category", [
+  "singAndDance",
+  "comedy",
+  "gaming",
+  "relationship",
+  "sports",
+  "cooking",
+  "education",
+  "technology",
+  "animeAndComics",
+  "life",
+  "religion",
+  "other"
+])
+
 export const userTable = pgTable("user", {
   id: text("id").primaryKey(),
   hashedPassword: text("hashed_password"),
@@ -80,6 +95,8 @@ export const videoTable = pgTable("video", {
     .notNull()
     .references(() => userTable.id),
   url: text("url").notNull(),
+  category: categoryEnums("category").notNull().default("other"),
+  description: text("message"),
   createdAt: timestamp("created_at", {
     withTimezone: true,
     mode: "date",
@@ -423,3 +440,6 @@ export type SelectChat = typeof chatTable.$inferSelect
 
 export type InsertMessage = typeof messageTable.$inferInsert
 export type SelectMessage = typeof messageTable.$inferSelect
+
+export type InsertVideo = typeof videoTable.$inferInsert
+export type SelectVideo = typeof videoTable.$inferSelect

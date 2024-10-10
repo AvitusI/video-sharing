@@ -10,7 +10,6 @@ import { Button } from "@/components/ui/button";
 import { Chat } from "@/app/components/chat/Chat";
 import { ChatType, useChatStore } from "@/store/chatStore";
 import { retrieveChats } from "@/app/actions/chat.actions";
-import { SearchDialog } from "@/app/components/modals/SearchUser";
 
 const retrieve = async () => {
   const userwithChats = await retrieveChats();
@@ -55,12 +54,9 @@ export default function Messages() {
           </span>
         </div>
       </div>
-      <div id="search" className="mb-6 w-full mt-4">
-        <SearchDialog />
-      </div>
-      <div className="flex flex-1 flex-col overflow-y-auto gap-2 w-full no-scrollbar">
+      <div className="flex flex-1 flex-col overflow-y-auto gap-2 w-full no-scrollbar mt-6">
         {status === "pending" ? (
-          <div>
+          <div className="flex justify-center items-center h-full w-full">
             Loading your chats...
           </div>
         ) : status === "error" ? (

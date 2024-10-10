@@ -1,6 +1,3 @@
-//import NextVideo from "next-video";
-//import sample from "@/videos/new-year.mp4";
-
 import { VideoForm } from "@/app/components/VideoForm";
 
 export default function VideoUpload() {
@@ -11,13 +8,3 @@ export default function VideoUpload() {
   );
 }
 
-/*
-<div>
-      <NextVideo
-        src={sample}
-        accentColor="green"
-        autoPlay={true}
-        className="max-w-[400px] h-[400px]"
-      />
-    </div>
-  */

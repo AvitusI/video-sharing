@@ -13,7 +13,7 @@ export const SearchDialog = () => {
   const handleChange = (e: any) => setQueryText(e.target.value)
 
   return (
-    <div className="relative z-50">
+    <div className="flex flex-col">
       <SearchInput
         value={queryText}
         onChange={handleChange}

@@ -52,14 +52,14 @@ export const VideoPost = ({
   };
 
   return (
-    <div className="relative w-full max-w-[360px] mx-auto my-5 z-30">
+    <div className="relative w-full max-w-[360px] mx-auto my-5 z-30 max-h-[500px] rounded-lg">
       <video
         ref={videoRef}
         src={src}
         loop
         muted
         playsInline
-        className="w-full h-auto object-cover cursor-pointer"
+        className="w-full h-auto max-h-[500px] object-cover cursor-pointer rounded-lg"
         onClick={handleVideoClick}
         onTimeUpdate={handleTimeUpdate} // Tracks video progress
       />

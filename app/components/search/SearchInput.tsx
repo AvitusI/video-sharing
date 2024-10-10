@@ -16,7 +16,7 @@ export const SearchInput = ({
                     <SearchIcon className="text-gray-500"/>
                 </div>
                 <input
-                    placeholder="Search user to message"
+                    placeholder="Search user"
                     value={value}
                     onChange={onChange}
                     className="focus:ring-green-500 focus:border-green-500 focus:outline-none block w-full pl-10 sm:text-sm border-gray-500 rounded-full p-2 border placeholder:text-xsgray-500"

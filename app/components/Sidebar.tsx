@@ -1,8 +1,10 @@
 "use client";
 
 import { useState, createContext } from "react";
-import { ChevronFirst, ChevronLast, MoreVertical } from "lucide-react";
 import Image from "next/image";
+import { ChevronFirst, ChevronLast, MoreVertical } from "lucide-react";
+
+import { useCollapseStore } from "@/store/collapseStore";
 
 interface SidebarProps {
   children: React.ReactNode;
@@ -11,7 +13,13 @@ interface SidebarProps {
 export const SidebarContext = createContext<any>(false);
 
 export const Sidebar = ({ children }: SidebarProps) => {
-  const [expanded, setExpanded] = useState(true);
+  const [expanded, setExpanded] = useState(false);
+  const toggleCollapse = useCollapseStore((store) => store.toggleCollapse)
+
+  const toggleExpanded = () => {
+    setExpanded((curr) => !curr);
+    toggleCollapse();
+  }
 
   return (
     <aside className="h-screen">
@@ -31,7 +39,7 @@ export const Sidebar = ({ children }: SidebarProps) => {
             }`}
           />
           <button
-            onClick={() => setExpanded((curr) => !curr)}
+            onClick={toggleExpanded}
             className="p-1.5 rounded-lg bg-gray-50 hover:bg-gray-100"
           >
             {expanded ? <ChevronFirst /> : <ChevronLast />}
