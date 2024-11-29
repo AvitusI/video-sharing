@@ -33,7 +33,7 @@ export function ImageForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(doSubmit)}>
+      <form onSubmit={form.handleSubmit(doSubmit)} className="mb-6">
         <FormField
           control={form.control}
           name="imageUrl"
@@ -49,9 +49,10 @@ export function ImageForm() {
         />
         <Button
           type="submit"
-          className="w-full bg-green-500 hover:bg-green-300"
+          size="sm"
+          className="w-full bg-green-500 hover:bg-green-300 h-8"
         >
-          Submit
+          Upload Avatar
         </Button>
       </form>
     </Form>

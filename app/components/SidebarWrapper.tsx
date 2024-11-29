@@ -1,3 +1,4 @@
+import { validateRequest } from "@/lib/auth";
 import { Sidebar } from "@/app/components/Sidebar";
 import { SidebarItem } from "@/app/components/SidebarItem";
 import {
@@ -9,9 +10,12 @@ import {
   Video,
   Mail,
   CircleUserRound,
+  BellRing
 } from "lucide-react";
 
-export const SidebarWrapper = () => {
+export const SidebarWrapper = async () => {
+  const { user } = await validateRequest()
+
   return (
     <main>
       <Sidebar>
@@ -37,6 +41,12 @@ export const SidebarWrapper = () => {
         />
         <SidebarItem icon={<Video size={20} />} text="LIVE" path="/live" />
         <SidebarItem
+          icon={<BellRing size={20} />}
+          text="Notifications"
+          path="/notifications"
+          alert
+        />
+        <SidebarItem
           icon={<Mail size={20} />}
           text="Messages"
           path="/messages"
@@ -46,7 +56,7 @@ export const SidebarWrapper = () => {
         <SidebarItem
           icon={<CircleUserRound size={20} />}
           text="Profile"
-          path="/profile"
+          path={`/profile/${user?.id}`}
         />
         <SidebarItem
           icon={<Settings size={20} />}

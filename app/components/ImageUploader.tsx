@@ -5,7 +5,6 @@ import { useDropzone } from "@uploadthing/react";
 import { generateClientDropzoneAccept } from "uploadthing/client";
 import { FaUpload } from "react-icons/fa";
 import Image from "next/image";
-import { Button } from "@/components/ui/button";
 
 type ImageUploaderProps = {
   imageUrl: string;
@@ -33,7 +32,7 @@ export function ImageUploader({
   return (
     <div
       {...getRootProps()}
-      className="flex h-72 cursor-pointer flex-col overflow-hidden rounded-md bg-grey-50"
+      className="flex justify-center items-center size-72 cursor-pointer flex-col rounded-md"
     >
       <input {...getInputProps()} id="imageUrl" className="cursor-pointer" />
       {imageUrl ? (
@@ -41,19 +40,16 @@ export function ImageUploader({
           <Image
             src={imageUrl}
             alt="image"
-            width={400}
-            height={300}
-            className="object-cover object-center"
+            width={208}
+            height={208}
+            className="object-cover object-center size-52 rounded-full"
           />
         </div>
       ) : (
-        <div className="flex flex-col text-center pt-12 border-dashed border-2 border-gray-300 rounded-md h-full">
+        <div className="flex flex-col items-center text-center pt-12 border-dashed border-2 border-gray-300 rounded-full size-52">
           <FaUpload size={32} className="inline" />
           <h3 className="mb-2 mt-2">Drag photo here</h3>
           <p className="p-12 mb-4">.png or .jpg extensions</p>
-          <Button className="rounded-md" size="sm">
-            Select From Computer
-          </Button>
         </div>
       )}
     </div>

@@ -1,3 +1,4 @@
+//import { subscribe } from "diagnostics_channel";
 import { relations, sql } from "drizzle-orm";
 import {
   boolean,
@@ -27,6 +28,16 @@ export const categoryEnums = pgEnum("category", [
   "other"
 ])
 
+export const notificationEnums = pgEnum("notification", [
+  "follow",
+  "message",
+  "videoLike",
+  "commentLike",
+  "replyLike",
+  "commentVideo",
+  "replyComment"
+])
+
 export const userTable = pgTable("user", {
   id: text("id").primaryKey(),
   hashedPassword: text("hashed_password"),
@@ -37,6 +48,7 @@ export const userTable = pgTable("user", {
   ),
   username: text("username").notNull().default("Guest"),
   role: roleEnums("role").notNull().default("user"),
+  defaultVideo: text("default_video").default("https://d2q3rw0ca832q8.cloudfront.net/videos/99933-video-720.mp4"),
 },
   (table) => ({
     userSearchIndex: index('user_search_index').using('gin', sql`to_tsvector('simple', ${table.username})`),
@@ -192,6 +204,7 @@ export const userRelations = relations(userTable, ({ one, many }) => ({
   following: many(followsTable, {
     relationName: "following",
   }),
+  liveEvents: many(usersOnLiveVideo),
 }));
 
 export const commentRelations = relations(commentTable, ({ one, many }) => ({
@@ -229,8 +242,12 @@ export const videoRelations = relations(videoTable, ({ one, many }) => ({
   likes: many(videoOnLikes),
 }));
 
-export const feedRelations = relations(feedTable, ({ many }) => ({
+export const feedRelations = relations(feedTable, ({ many, one }) => ({
   feed: many(videoOnFeed),
+  user: one(userTable, {
+    fields: [feedTable.userId],
+    references: [userTable.id]
+  })
 }));
 
 export const videoOnFeedRelations = relations(videoOnFeed, ({ one }) => ({
@@ -257,6 +274,58 @@ export const chatTable = pgTable("chat", {
     .notNull()
     .defaultNow(),
 });
+
+export const liveVideoTable = pgTable("live_video", {
+  id: text("id").primaryKey(),
+  host: text("host").notNull().references(() => userTable.id),
+  description: text("description").notNull(),
+  startTime: timestamp("start_time", {
+    withTimezone: true,
+    mode: "date",
+  })
+    .notNull(),
+  endTime: timestamp("endTime", {
+    withTimezone: true,
+    mode: "date",
+  })
+    .notNull(),
+  createdAt: timestamp("created_at", {
+    withTimezone: true,
+    mode: "date",
+  })
+    .notNull()
+    .defaultNow(),
+})
+
+export const usersOnLiveVideo = pgTable(
+  "users_on_live_video",
+  {
+    userId: text("user_id")
+      .notNull()
+      .references(() => userTable.id),
+    liveVideoId: text("live_video_id")
+      .notNull()
+      .references(() => liveVideoTable.id),
+  },
+  (table) => ({
+    pk: primaryKey({ columns: [table.userId, table.liveVideoId] }),
+  })
+)
+
+export const liveVideoRelations = relations(liveVideoTable, ({ many }) => ({
+  subscribers: many(usersOnLiveVideo),
+}))
+
+export const usersOnLiveVideoRelations = relations(usersOnLiveVideo, ({ one }) => ({
+  user: one(userTable, {
+    fields: [usersOnLiveVideo.userId],
+    references: [userTable.id]
+  }),
+  liveVideo: one(liveVideoTable, {
+    fields: [usersOnLiveVideo.liveVideoId],
+    references: [liveVideoTable.id]
+  })
+}))
 
 export const usersOnChat = pgTable(
   "user_on_chat",
@@ -407,10 +476,10 @@ export const replyOnLikesRelations = relations(replyOnLikes, ({ one }) => ({
 export const followsTable = pgTable(
   "follows",
   {
-    followerId: text("follower_id")
+    followerId: text("follower_id") // Who follows the user
       .notNull()
       .references(() => userTable.id),
-    followingId: text("following_id")
+    followingId: text("following_id")  // The user being followed
       .notNull()
       .references(() => userTable.id),
   },
@@ -431,6 +500,21 @@ export const followsTableRelations = relations(followsTable, ({ one }) => ({
     relationName: "following",
   }),
 }));
+
+export const notificationTable = pgTable("notify", {
+  id: text("id").primaryKey(),
+  ownerId: text("owner_id").notNull().references(() => userTable.id),
+  userId: text("user_id").notNull().references(() => userTable.id),
+  type: notificationEnums("type").notNull(),
+  content: text("content").notNull(),
+  read: boolean("read").notNull().default(false),
+  createdAt: timestamp("created_at", {
+    withTimezone: true,
+    mode: "date",
+  })
+    .notNull()
+    .defaultNow(),
+})
 
 export type InsertUser = typeof userTable.$inferInsert
 export type SelectUser = typeof userTable.$inferSelect

@@ -33,3 +33,14 @@ export const MagicLinkSchema = z.object({
     message: "Invalid email address",
   }),
 });
+
+export const EditProfileSchema = z.object({
+  username: z.string().min(3, {
+    message: "username must be at least 3 characters long",
+  }),
+  bio: z.string().max(160, {
+    message: "bio must be at most 160 characters long",
+  }).min(10, {
+    message: "bio must be at least 10 characters long",
+  }),
+})

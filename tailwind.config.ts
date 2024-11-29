@@ -60,8 +60,12 @@ const config: Config = {
         custom: "1fr 2fr",
         customize: "50px 1fr",
         customized: "400px 1fr",
-        customization: "1fr 100px"
+        customization: "1fr 50px",
+        livecard: "1fr 100px"
       },
+      gridTemplateRows: {
+        livecard: "1fr 100px"
+      }
     },
   },
   plugins: [require("tailwindcss-animate")],

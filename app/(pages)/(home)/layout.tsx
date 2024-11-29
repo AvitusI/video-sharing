@@ -12,7 +12,6 @@ export default function Layout(props: LayoutProps) {
       <Navbar />
       <div className="flex-1 h-screen overflow-auto">
         <div>{props.children}</div>
-        <div>{props.children}</div>
       </div>      
     </div>
   );

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useForm, Controller } from "react-hook-form";
 
 import { categoryEnums } from "../lib/db/schema";
@@ -13,6 +14,8 @@ import { VideoUploader } from "./VideoUploader";
 export const VideoForm = () => {
   const [files, setFiles] = useState([]);
   const [uploading, setUploading] = useState(false);
+
+  const router = useRouter()
 
   const {
     register,
@@ -67,6 +70,7 @@ export const VideoForm = () => {
           variant: "default",
           description: "Video uploaded successfully"
         })
+        router.push("/home")
       } else {
         toast({
           variant: "destructive",
